@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Info - Magic Mirror Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Magic Mirror Admin Panel</h1>
+        
+        <!-- Navigation Tabs -->
+        <% if (!locals.user) { %>
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item"><a class="nav-link" href="/user/login">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="/user/signup">Sign Up</a></li>
+            </ul>
+        <% } else { %>
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">Notices</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/college-info">College Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/gallery">Gallery</a>
+                </li>
+            </ul>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3>College Information</h3>
+                </div>
+                <div class="card-body">
+                    <form id="collegeInfoForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-secondary text-white">
+                                        <h4>Basic Information</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">College Name</label>
+                                            <input type="text" class="form-control" id="name" name="name" value="<%= collegeInfo.name || '' %>" required>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="tagline" class="form-label">Tagline/Motto</label>
+                                            <input type="text" class="form-control" id="tagline" name="tagline" value="<%= collegeInfo.tagline || '' %>">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="logoUrl" class="form-label">Logo URL</label>
+                                            <input type="text" class="form-control" id="logoUrl" name="logoUrl" value="<%= collegeInfo.logoUrl || '' %>">
+                                            <% if (collegeInfo.logoUrl) { %>
+                                                <div class="mt-2">
+                                                    <img src="<%= collegeInfo.logoUrl %>" alt="College Logo" class="img-thumbnail" style="max-width: 100px;">
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="established" class="form-label">Established Year</label>
+                                            <input type="text" class="form-control" id="established" name="established" value="<%= collegeInfo.established || '' %>">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-header bg-secondary text-white">
+                                        <h4>Contact Information</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Address</label>
+                                            <textarea class="form-control" id="address" name="address" rows="3"><%= collegeInfo.address || '' %></textarea>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="phone" class="form-label">Phone</label>
+                                            <input type="text" class="form-control" id="phone" name="phone" value="<%= collegeInfo.phone || '' %>">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" value="<%= collegeInfo.email || '' %>">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="website" class="form-label">Website</label>
+                                            <input type="text" class="form-control" id="website" name="website" value="<%= collegeInfo.website || '' %>">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                        <h4>Social Media</h4>
+                                        <button type="button" class="btn btn-sm btn-light" id="addSocialMedia">Add Social Media</button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="socialMediaContainer">
+                                            <% if (collegeInfo.socialMedia && collegeInfo.socialMedia.length > 0) { %>
+                                                <% collegeInfo.socialMedia.forEach((social, index) => { %>
+                                                    <div class="social-media-item border p-3 mb-2 rounded">
+                                                        <div class="mb-2">
+                                                            <label class="form-label">Platform</label>
+                                                            <input type="text" class="form-control" name="socialMedia[<%= index %>][platform]" value="<%= social.platform %>" required>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label">Handle</label>
+                                                            <input type="text" class="form-control" name="socialMedia[<%= index %>][handle]" value="<%= social.handle %>" required>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label">URL (optional)</label>
+                                                            <input type="text" class="form-control" name="socialMedia[<%= index %>][url]" value="<%= social.url || '' %>">
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-danger remove-social">Remove</button>
+                                                    </div>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <p>No social media accounts added yet.</p>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                        <h4>Departments</h4>
+                                        <button type="button" class="btn btn-sm btn-light" id="addDepartment">Add Department</button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="departmentsContainer">
+                                            <% if (collegeInfo.departments && collegeInfo.departments.length > 0) { %>
+                                                <% collegeInfo.departments.forEach((dept, index) => { %>
+                                                    <div class="list-item d-flex align-items-center mb-2">
+                                                        <input type="text" class="form-control me-2" name="departments[]" value="<%= dept %>">
+                                                        <button type="button" class="btn btn-sm btn-danger remove-department">×</button>
+                                                    </div>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <p>No departments added yet.</p>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                        <h4>Facilities</h4>
+                                        <button type="button" class="btn btn-sm btn-light" id="addFacility">Add Facility</button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="facilitiesContainer">
+                                            <% if (collegeInfo.facilities && collegeInfo.facilities.length > 0) { %>
+                                                <% collegeInfo.facilities.forEach((facility, index) => { %>
+                                                    <div class="list-item d-flex align-items-center mb-2">
+                                                        <input type="text" class="form-control me-2" name="facilities[]" value="<%= facility %>">
+                                                        <button type="button" class="btn btn-sm btn-danger remove-facility">×</button>
+                                                    </div>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <p>No facilities added yet.</p>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-primary btn-lg">Save College Information</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } %>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Add social media
+            $('#addSocialMedia').click(function() {
+                const index = $('.social-media-item').length;
+                const newSocial = `
+                    <div class="social-media-item border p-3 mb-2 rounded">
+                        <div class="mb-2">
+                            <label class="form-label">Platform</label>
+                            <input type="text" class="form-control" name="socialMedia[${index}][platform]" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Handle</label>
+                            <input type="text" class="form-control" name="socialMedia[${index}][handle]" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">URL (optional)</label>
+                            <input type="text" class="form-control" name="socialMedia[${index}][url]">
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger remove-social">Remove</button>
+                    </div>
+                `;
+                
+                if ($('.social-media-item').length === 0) {
+                    $('#socialMediaContainer').empty();
+                }
+                
+                $('#socialMediaContainer').append(newSocial);
+            });
+            
+            // Remove social media
+            $(document).on('click', '.remove-social', function() {
+                $(this).closest('.social-media-item').remove();
+                
+                if ($('.social-media-item').length === 0) {
+                    $('#socialMediaContainer').html('<p>No social media accounts added yet.</p>');
+                }
+            });
+            
+            // Add department
+            $('#addDepartment').click(function() {
+                const newDept = `
+                    <div class="list-item d-flex align-items-center mb-2">
+                        <input type="text" class="form-control me-2" name="departments[]">
+                        <button type="button" class="btn btn-sm btn-danger remove-department">×</button>
+                    </div>
+                `;
+                
+                if ($('#departmentsContainer .list-item').length === 0) {
+                    $('#departmentsContainer').empty();
+                }
+                
+                $('#departmentsContainer').append(newDept);
+            });
+            
+            // Remove department
+            $(document).on('click', '.remove-department', function() {
+                $(this).closest('.list-item').remove();
+                
+                if ($('#departmentsContainer .list-item').length === 0) {
+                    $('#departmentsContainer').html('<p>No departments added yet.</p>');
+                }
+            });
+            
+            // Add facility
+            $('#addFacility').click(function() {
+                const newFacility = `
+                    <div class="list-item d-flex align-items-center mb-2">
+                        <input type="text" class="form-control me-2" name="facilities[]">
+                        <button type="button" class="btn btn-sm btn-danger remove-facility">×</button>
+                    </div>
+                `;
+                
+                if ($('#facilitiesContainer .list-item').length === 0) {
+                    $('#facilitiesContainer').empty();
+                }
+                
+                $('#facilitiesContainer').append(newFacility);
+            });
+            
+            // Remove facility
+            $(document).on('click', '.remove-facility', function() {
+                $(this).closest('.list-item').remove();
+                
+                if ($('#facilitiesContainer .list-item').length === 0) {
+                    $('#facilitiesContainer').html('<p>No facilities added yet.</p>');
+                }
+            });
+            
+            // Form submission
+            $('#collegeInfoForm').submit(function(e) {
+                e.preventDefault();
+                
+                // Serialize form data
+                const formData = {};
+                
+                // Basic info
+                formData.name = $('#name').val();
+                formData.tagline = $('#tagline').val();
+                formData.logoUrl = $('#logoUrl').val();
+                formData.established = $('#established').val();
+                
+                // Contact info
+                formData.address = $('#address').val();
+                formData.phone = $('#phone').val();
+                formData.email = $('#email').val();
+                formData.website = $('#website').val();
+                
+                // Social media
+                formData.socialMedia = [];
+                $('.social-media-item').each(function() {
+                    const platform = $(this).find('input[name*="[platform]"]').val();
+                    const handle = $(this).find('input[name*="[handle]"]').val();
+                    const url = $(this).find('input[name*="[url]"]').val();
+                    
+                    if (platform && handle) {
+                        formData.socialMedia.push({
+                            platform,
+                            handle,
+                            url
+                        });
+                    }
+                });
+                
+                // Departments
+                formData.departments = [];
+                $('#departmentsContainer input[name="departments[]"]').each(function() {
+                    const dept = $(this).val();
+                    if (dept) {
+                        formData.departments.push(dept);
+                    }
+                });
+                
+                // Facilities
+                formData.facilities = [];
+                $('#facilitiesContainer input[name="facilities[]"]').each(function() {
+                    const facility = $(this).val();
+                    if (facility) {
+                        formData.facilities.push(facility);
+                    }
+                });
+                
+                // Send data to server
+                $.ajax({
+                    url: '/college-info/api',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        alert('College information saved successfully!');
+                    },
+                    error: function(error) {
+                        alert('Error saving college information: ' + error.responseJSON?.error || 'Unknown error');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

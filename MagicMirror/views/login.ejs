@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login</title>
+  <!-- <link rel="stylesheet" href="style.css"> -->
+</head>
+
+<style>
+  * {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: grey;
+
+  }
+
+  .main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .spacingF {
+    margin: .2em;
+  }
+
+  form {
+    height: 40vh;
+    width: 40vw;
+  }
+
+  .L {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    top: 5em;
+  }
+
+  .L>h3 {
+    color: black;
+  }
+
+  .size {
+    text-align: center;
+    height: 3em;
+    width: 20em;
+    border-radius: .7em;
+  }
+
+  .R {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 42em;
+    z-index: 1;
+    width: 100vw;
+  }
+
+  .R-Over {
+    height: 96vh;
+    width: 49vw;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 2%;
+    left: 50%;
+    background-color: #8866e78d;
+    border-radius: 0.7em;
+    text-align: center;
+    color: white;
+  }
+
+  .R-Over>h1 {
+    color: white;
+  }
+
+  .Rimg {
+    height: 96vh;
+    width: 49vw;
+    position: absolute;
+    left: 50%;
+    top: 2%;
+    border-radius: .7em;
+  }
+
+  @media (min-width: 300px) {
+      .main {
+        flex-direction: column;
+      }
+
+      form {
+        width: 90%;
+        height: auto;
+      }
+
+      .L {
+        top: 0;
+      }
+
+      .size {
+        width: 100%;
+      }
+
+      .R-Over {
+        width: 100%;
+        height: auto;
+        position: relative;
+        top: 0;
+        left: 0;
+        border-radius: 0;
+      }
+
+      .Rimg {
+        width: 100%;
+        height: auto;
+        position: relative;
+        left: 0;
+        top: 0;
+        border-radius: 0;
+      }
+    }
+
+    /* Media query for screens from 600px and up */
+    @media (min-width: 600px) {
+      .main {
+        flex-direction: row;
+      }
+
+      form {
+        width: 40vw;
+        height: 40vh;
+      }
+
+      .L {
+        top: 5em;
+      }
+
+      .size {
+        width: 20em;
+      }
+
+      .R-Over {
+        width: 49vw;
+        height: 96vh;
+        position: absolute;
+        top: 2%;
+        left: 50%;
+        border-radius: 0.7em;
+      }
+
+      .Rimg {
+        width: 49vw;
+        height: 96vh;
+        position: absolute;
+        left: 50%;
+        top: 2%;
+        border-radius: .7em;
+      }
+    }
+</style>
+
+<body>
+  <div class="main">
+    <!-- left side -->
+    <div class="L">
+      <h3>Sign In</h3>
+
+      <% if (locals.error) { %>
+        <div class="alert" role="alert" style="color: red;">
+          <%= locals.error %>
+        </div>
+      <% } %>
+
+          <form action="/user/login" method="post">
+            <label for="">Enter your username and password to sign in.</label>
+
+            <div class="mb-3 spacingF">
+              <input type="text" class="size form-control" id="exampleInputEmail1" placeholder="Username" name="email">
+            </div>
+
+            <div class="mb-3 spacingF">
+              <input type="password" class="size form-control" id="exampleInputPassword1" placeholder="Password" name="pass">
+            </div>
+
+            <div class="mb-3 form-check spacingF">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Remember me</label>
+              </div>
+            </div>
+            <button type="submit" class="size btn btn-primary spacingF">Sign In</button><br>
+            Don't have an acount?<a href="/user/signup" style="text-decoration: none; color: #8866e7;"> Sign up</a>
+          </form>
+    </div>
+    <!-- right side -->
+    <div class="R">
+      <img class="Rimg"
+        src="https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg"
+        alt="ErrorInImg" height="99em" width="48em">
+    </div>
+  </div>
+  <div class="R-Over">
+    <h1>"Welcome to Smart Campus"</h1>
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam veniam suscipit iste labore accusamus animi
+    harum optio delectus saepe tempora ea tempore voluptatibus dicta deleniti, natus perspiciatis odio quia!
+  </div>
+</body>
+
+</html>

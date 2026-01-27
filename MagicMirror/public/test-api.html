@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .endpoint {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Magic Mirror API Test Page</h1>
+    <p>Use this page to test if your API endpoints are working correctly.</p>
+    
+    <div class="endpoint">
+        <h2>Notices API</h2>
+        <p>Endpoint: <code>/api/notices</code></p>
+        <button onclick="testEndpoint('/api/notices', 'notices-result', 'notices-status')">Test Notices API</button>
+        <div class="status" id="notices-status"></div>
+        <pre id="notices-result">Results will appear here...</pre>
+    </div>
+    
+    <div class="endpoint">
+        <h2>News API</h2>
+        <p>Endpoint: <code>/news/api</code></p>
+        <button onclick="testEndpoint('/news/api', 'news-result', 'news-status')">Test News API</button>
+        <div class="status" id="news-status"></div>
+        <pre id="news-result">Results will appear here...</pre>
+    </div>
+    
+    <div class="endpoint">
+        <h2>Server Information</h2>
+        <p>Your server information:</p>
+        <pre id="server-info"></pre>
+    </div>
+
+    <script>
+        // Display server information
+        document.getElementById('server-info').textContent = 
+            `Current URL: ${window.location.href}\n` +
+            `Server: ${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+        
+        // Function to test an endpoint
+        async function testEndpoint(endpoint, resultId, statusId) {
+            const resultElement = document.getElementById(resultId);
+            const statusElement = document.getElementById(statusId);
+            
+            statusElement.textContent = "Testing...";
+            statusElement.className = "status";
+            
+            try {
+                const response = await fetch(endpoint);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                resultElement.textContent = JSON.stringify(data, null, 2);
+                
+                statusElement.textContent = `Success! Retrieved ${data.length} items.`;
+                statusElement.className = "status success";
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = "Failed to fetch data.";
+                statusElement.className = "status error";
+            }
+        }
+    </script>
+</body>
+</html> 

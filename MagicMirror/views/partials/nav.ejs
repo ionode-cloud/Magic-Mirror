@@ -1,0 +1,30 @@
+<nav class="nav" id="navBar" style="display: flex; flex-direction: row; justify-content: space-around; column-gap: 20em; align-items: center; margin: 1em;">
+
+    <span class="navigator" ><a href=""  style="text-decoration: none; color: white;">pages/Dashboard</a></span>
+    <span class="navigator searchOne">
+        <form class="d-flex" role="search">
+            <input class="form-control me-2 D-search" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+          <% if (locals.user) { %>
+            <button type="button" style="background-color: rgba(14, 19, 31, 0.078); color: white;border: none;" id="signOut" onclick="SignOut()" enabled>Sign Out</button>
+
+          <% } else { %>
+                <button type="button" style="background-color: rgba(14, 19, 31, 0.078); color: white;border: none;" id="signIn" onclick="SignIn()">Sign In</button>
+            <% } %>
+           
+           
+    </span>
+</nav>
+
+<script>
+    function SignOut() {
+        window.location.href = "/signin";
+        
+    }
+
+    function SignIn() {
+        window.location.href = "/signin";
+
+    }
+</script>

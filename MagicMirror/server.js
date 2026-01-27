@@ -1,0 +1,149 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const path = require('path');
+const cors = require('cors');
+// const session = require("express-session");
+const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
+const { checkForAuthMid } = require("./middlewares/authentication");
+const userRoutes = require("./routes/userRoutes");
+const News = require("./models/News");
+const Notice = require('./models/Notice');
+const CollegeInfo = require('./models/CollegeInfo');
+const Gallery = require('./models/Gallery');
+
+dotenv.config(); // Load environment variables
+
+const app = express();
+const port = process.env.PORT || 2280;
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/magicMirror', { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true 
+})
+.then(() => console.log('✅ Connected to MongoDB'))
+.catch(err => console.error('❌ MongoDB Connection Error:', err));
+
+// Enable CORS
+app.use(cors({
+  origin: '*',  // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(cookieParser());
+// app.use(checkForAuthMid("token"));
+
+
+// Set up EJS as the view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Middleware for parsing requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Import Routes
+const indexRoutes = require('./routes/index');
+const newsRoutes = require('./routes/news');
+const collegeInfoRoutes = require('./routes/collegeInfo');
+const galleryRoutes = require('./routes/gallery');
+
+
+
+// Direct read and write data routes
+app.get('/notices/data', async (req, res) => {
+  try {
+    const userId = req.query.id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const data = await Notice.find({ createdBy: new mongoose.Types.ObjectId(userId) })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching user news:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/news/data', async (req, res) => {
+  try {
+    const userId = req.query.id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const data = await News.find({ createdBy: new mongoose.Types.ObjectId(userId) })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching user news:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/college-info/data', async (req, res) => {
+  try {
+    const userId = req.query.id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const data = await CollegeInfo.findOne({ createdBy: userId }).sort({ updatedAt: -1 });
+    console.log("Data fetched from DB:", data);
+
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching user college-info :', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/gallery/data', async (req, res) => {
+  try {
+    const userId = req.query.id;
+    console.log("User ID:", userId);
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const data = await Gallery.find({ createdBy: userId }).sort({ updatedAt: -1 });
+    console.log("Data fetched from DB:", data);
+
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching user gallery :', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Authentication Routes
+
+app.get("/logout", (req, res) => {
+  res.redirect("https://learning-satyr-29.clerk.accounts.dev/sign-out");
+}); 
+
+app.use("/user",userRoutes);
+// Apply Authentication Middleware to Protected Routes
+app.use('/',checkForAuthMid("token"), indexRoutes); // Public Route
+app.use('/news',checkForAuthMid("token"), newsRoutes); // Protected Route
+app.use('/college-info',checkForAuthMid("token"), collegeInfoRoutes); // Protected Route
+app.use('/gallery',checkForAuthMid("token"), galleryRoutes); // Protected Route
+
+// Start Express Server
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 Server running at http://localhost:${port}/`);
+});

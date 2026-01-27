@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Notice - Magic Mirror Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Edit Notice</h1>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h3>Edit Notice</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="/news/<%= newsItem._id %>" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" value="<%= newsItem.title %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Content</label>
+                                <textarea class="form-control" id="content" name="content" rows="4" required><%= newsItem.content %></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Image</label>
+                                <% if(newsItem.imageUrl) { %>
+                                    <div class="mb-2">
+                                        <img src="<%= newsItem.imageUrl %>" alt="Current Notice Image" class="img-thumbnail" style="max-width: 200px;">
+                                        <p class="text-muted">Current image</p>
+                                    </div>
+                                <% } %>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                <small class="text-muted">Max size: 5MB. Formats: JPG, PNG, GIF. Leave empty to keep current image.</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="1" <%= newsItem.priority === 1 ? 'selected' : '' %>>Low</option>
+                                    <option value="2" <%= newsItem.priority === 2 ? 'selected' : '' %>>Medium</option>
+                                    <option value="3" <%= newsItem.priority === 3 ? 'selected' : '' %>>High</option>
+                                </select>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <a href="/news" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-warning">Update Notice</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

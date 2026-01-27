@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Admin - Magic Mirror Admin Panel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .draggable {
+            cursor: move;
+        }
+        .dragging {
+            opacity: 0.5;
+            background: #f8f9fa;
+        }
+        .drag-handle {
+            cursor: grab;
+            padding: 5px;
+            color: #666;
+            display: none;
+        }
+        .drag-handle:hover {
+            color: #333;
+        }
+        .edit-mode .drag-handle {
+            display: inline-block;
+        }
+        .edit-mode .priority-cell {
+            display: none;
+        }
+        .priority-handle {
+            display: none;
+        }
+        .edit-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .edit-buttons button {
+            transition: all 0.3s ease;
+        }
+        .edit-buttons button.d-none {
+            display: none !important;
+        }
+        .card-header {
+            position: relative;
+        }
+        .card-body.edit-mode {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Magic Mirror Admin Panel</h1>
+        
+        <!-- Navigation Tabs -->
+        <% if (!locals.user) { %>
+            <div class="nav nav-tabs mb-4">
+                <a class="nav-link" href="/user/login">Login</a>
+                <a class="nav-link" href="/user/signup">Sign Up</a>
+            </div>
+        <% } else { %>
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">Notices</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/college-info">College Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/gallery">Gallery</a>
+                </li>
+            </ul>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3>Gallery of <%= locals.user.fullName ?? "XYZ" %> </h3>
+                        </div>
+                        <div class="card-body">
+                            <form action="/gallery" method="POST">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="url" class="form-label">URL</label>
+                                    <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label">Priority</label>
+                                    <select class="form-select" id="priority" name="priority">
+                                        <option value="1">Low</option>
+                                        <option value="2">Medium</option>
+                                        <option value="3">High</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add New Gallery Item</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h3 class="mb-0">New Items</h3>
+                            <div class="edit-buttons">
+                                <button class="btn btn-light btn-sm" id="editModeBtn">
+                                    <i class="fas fa-sort"></i> Edit Priority Order
+                                </button>
+                                <button class="btn btn-success btn-sm d-none" id="savePriorityBtn">
+                                    <i class="fas fa-save"></i> Save Order
+                                </button>
+                                <button class="btn btn-danger btn-sm d-none" id="cancelPriorityBtn">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <% if(gallery.length > 0) { %>
+                                <table class="table table-hover" id="newsTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th style="width: 40px;"></th>
+                                            <th>Name</th>
+                                            <th>URL</th>
+                                            <th>Priority</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% gallery.forEach((gallery, index) => { %>
+                                            <tr class="notice-row" data-id="<%= gallery._id %>" data-priority="<%= gallery.priority %>">
+                                                <td class="drag-handle text-center">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </td>
+                                                <td class="truncate-cell">
+                                                    <div class="cell-content"><%= gallery.name %></div>
+                                                </td>
+                                                <td class="truncate-cell">
+                                                    <div class="cell-content"><%= gallery.url %></div>
+                                                </td>
+                                                <td class="priority-cell">
+                                                    <% if(gallery.priority === 1) { %>
+                                                        <span class="badge bg-info">Low</span>
+                                                    <% } else if(gallery.priority === 2) { %>
+                                                        <span class="badge bg-warning">Medium</span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-danger">High</span>
+                                                    <% } %>
+                                                </td>
+                                                <td><%= gallery.date.toLocaleDateString() %></td>
+                                                <td>
+                                                   
+                                                    <form action="/gallery/<%= gallery._id %>/delete" method="POST" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                                
+                                <!-- Pagination Controls -->
+                                <div class="d-flex justify-content-center mt-4">
+                                    <nav aria-label="News pagination">
+                                        <ul class="pagination">
+                                            <% if (hasPrevPage) { %>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="/?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                                        <span aria-hidden="true">&laquo;</span>
+                                                    </a>
+                                                </li>
+                                            <% } else { %>
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#" aria-label="Previous">
+                                                        <span aria-hidden="true">&laquo;</span>
+                                                    </a>
+                                                </li>
+                                            <% } %>
+                                            
+                                            <% for(let i = 1; i <= totalPages; i++) { %>
+                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                    <a class="page-link" href="/?page=<%= i %>"><%= i %></a>
+                                                </li>
+                                            <% } %>
+                                            
+                                            <% if (hasNextPage) { %>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="/?page=<%= currentPage + 1 %>" aria-label="Next">
+                                                        <span aria-hidden="true">&raquo;</span>
+                                                    </a>
+                                                </li>
+                                            <% } else { %>
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#" aria-label="Next">
+                                                        <span aria-hidden="true">&raquo;</span>
+                                                    </a>
+                                                </li>
+                                            <% } %>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            <% } else { %>
+                                <p class="text-center">No items found in Gallery. Add one!</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const newsTableBody = document.querySelector('#newsTable tbody');
+            const cardBody = document.querySelector('.card-body');
+            let sortable = null;
+            
+            // Initialize edit mode button
+            const editModeBtn = document.getElementById('editModeBtn');
+            const savePriorityBtn = document.getElementById('savePriorityBtn');
+            const cancelPriorityBtn = document.getElementById('cancelPriorityBtn');
+            
+            // Function to toggle edit mode
+            function toggleEditMode(enabled) {
+                const handles = document.querySelectorAll('.drag-handle');
+                const tableBody = document.querySelector('#newsTable tbody');
+                
+                handles.forEach(handle => {
+                    handle.style.display = enabled ? 'block' : 'none';
+                });
+                
+                // Toggle button visibility
+                editModeBtn.classList.toggle('d-none', enabled);
+                savePriorityBtn.classList.toggle('d-none', !enabled);
+                cancelPriorityBtn.classList.toggle('d-none', !enabled);
+                
+                // Toggle edit mode class on card body
+                cardBody.classList.toggle('edit-mode', enabled);
+                
+                if (enabled) {
+                    // Initialize Sortable
+                    sortable = new Sortable(tableBody, {
+                        handle: '.drag-handle',
+                        animation: 150,
+                        onSort: function() {
+                            console.log('Items reordered');
+                        }
+                    });
+                } else if (sortable) {
+                    sortable.destroy();
+                    sortable = null;
+                }
+            }
+            
+            // Initial state
+            toggleEditMode(false);
+            
+            // Edit mode button click handler
+            editModeBtn.addEventListener('click', () => {
+                console.log('Edit mode enabled');
+                toggleEditMode(true);
+            });
+            
+            // Cancel button click handler
+            cancelPriorityBtn.addEventListener('click', () => {
+                console.log('Edit mode cancelled');
+                location.reload();
+            });
+            
+            // Save button click handler
+            savePriorityBtn.addEventListener('click', async () => {
+                console.log('Saving priorities...');
+                const rows = document.querySelectorAll('#newsTable tbody tr');
+                const items = [];
+                
+                // Collect all items with their new priorities
+                rows.forEach((row, index) => {
+                    const id = row.getAttribute('data-id');
+                    if (id) {
+                        items.push({
+                            id: id,
+                            priority: rows.length - index
+                        });
+                    }
+                });
+                
+                console.log('Items to update:', items);
+                
+                try {
+                    // Send update request
+                    const response = await fetch('/gallery/update-priority', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ items })
+                    });
+                    
+                    if (response.ok) {
+                        alert('Priorities updated successfully!');
+                        location.reload();
+                    } else {
+                        throw new Error('Failed to update priorities');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to update priorities. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <%- include("./partials/head") %>
+        <title>SignUp</title>
+</head>
+<style>
+  @media (min-width: 300px) {
+            .container {
+                width: 90%;
+                margin: 0 auto;
+                padding: auto;
+            }
+
+            .form-control {
+                font-size: 14px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: auto;
+            }
+        }
+
+        /* Media query for screens from 600px and up */
+        @media (min-width: 600px) {
+            .container {
+                width: 70%;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .form-control {
+                font-size: 16px;
+            }
+
+            .btn {
+                width: auto;
+                padding: 10px 20px;
+            }
+        }
+
+        /* Media query for screens from 900px and up */
+        @media (min-width: 900px) {
+            .container {
+                width: 50%;
+                margin: 0 auto;
+                padding: 30px;
+            }
+
+            .form-control {
+                font-size: 18px;
+            }
+
+            .btn {
+                width: auto;
+                padding: 10px 30px;
+            }
+        }
+</style>
+<body>
+    <div class="container">
+        <form action="/user/signup" method="post">
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullName" aria-describedby="fullName" name="fullName">
+                <div id="fullName" class="form-text">We'll never share your personal details with anyone else.</div>
+              </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
+              <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+              <label for="pass" class="form-label">Password</label>
+              <input type="password" class="form-control" id="pass" name="pass">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+    </div>
+</body>
+<%- include("./partials/script") %>
+
+</html>
