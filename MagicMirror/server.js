@@ -132,9 +132,12 @@ app.get('/gallery/data', async (req, res) => {
 
 // Authentication Routes
 
+// server.js
 app.get("/logout", (req, res) => {
-  res.redirect("https://learning-satyr-29.clerk.accounts.dev/sign-out");
-}); 
+  res.clearCookie("token"); // clear auth cookie
+  res.redirect("/user/login");
+});
+
 
 app.use("/user",userRoutes);
 // Apply Authentication Middleware to Protected Routes
