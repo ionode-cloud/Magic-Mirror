@@ -132,17 +132,30 @@ app.get('/gallery/data', async (req, res) => {
 });
 
 // Authentication Routes
-
+// --- LOGOUT ---
 app.get("/logout", (req, res) => {
-  res.redirect("https://learning-satyr-29.clerk.accounts.dev/sign-out");
-}); 
+  // Clear token and redirect to login
+  res.clearCookie("token");
+  res.redirect("/user/login");
+});
 
-app.use("/user",userRoutes);
-// Apply Authentication Middleware to Protected Routes
-app.use('/',checkForAuthMid("token"), indexRoutes); // Public Route
-app.use('/news',checkForAuthMid("token"), newsRoutes); // Protected Route
-app.use('/college-info',checkForAuthMid("token"), collegeInfoRoutes); // Protected Route
-app.use('/gallery',checkForAuthMid("token"), galleryRoutes); // Protected Route
+// --- USER ROUTES ---
+app.use("/user", userRoutes); // login/signup routes
+
+// --- ROOT ROUTE ---
+app.get('/', (req, res) => {
+  const token = req.cookies.token;
+  if(!token){
+    return res.redirect('/user/login'); // not logged in → login page
+  }
+  res.redirect('/dashboard'); // logged in → admin panel
+});
+
+// --- PROTECTED ROUTES ---
+app.use('/dashboard', checkForAuthMid("token"), indexRoutes); // admin panel
+app.use('/news', checkForAuthMid("token"), newsRoutes);
+app.use('/college-info', checkForAuthMid("token"), collegeInfoRoutes);
+app.use('/gallery', checkForAuthMid("token"), galleryRoutes);
 
 // Start Express Server
 app.listen(port, () => {
