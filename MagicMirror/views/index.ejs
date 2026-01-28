@@ -50,67 +50,6 @@
         .card-body.edit-mode {
             background-color: #f8f9fa;
         }
-        /* Admin header container */
-.admin-header {
-    padding: 10px 0;
-    border-bottom: 1px solid #dee2e6;
-}
-
-/* Nav tabs customization */
-.admin-header .nav-tabs .nav-link {
-    font-weight: 500;
-    color: #495057;
-    transition: all 0.2s ease;
-}
-
-.admin-header .nav-tabs .nav-link:hover {
-    color: #0d6efd;
-    background-color: #e9ecef;
-}
-
-.admin-header .nav-tabs .nav-link.active {
-    color: #fff;
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-/* User actions (logout) */
-.user-actions {
-    display: flex;
-    align-items: center;
-}
-
-.user-actions .logout-btn {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.875rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease;
-}
-
-.user-actions .logout-btn i {
-    font-size: 0.9rem;
-}
-
-.user-actions .logout-btn:hover {
-    background-color: #dc3545;
-    color: #fff;
-    text-decoration: none;
-}
-
-/* Responsive for mobile */
-@media (max-width: 768px) {
-    .admin-header {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .user-actions {
-        justify-content: flex-end;
-    }
-}
-/* hee */
     </style>
 </head>
 <body>
@@ -137,14 +76,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/gallery">Gallery</a>
                 </li>
-
             </ul>
-             <div class="user-actions d-flex align-items-center">
-        <span class="me-2 text-muted">Hello, <%= locals.user.fullName %></span>
-        <a href="/logout" class="btn btn-danger btn-sm logout-btn">
-            <i class="fas fa-sign-out-alt me-1"></i> Logout
-        </a>
-    </div>
             
             <div class="row">
                 <div class="col-md-4">
